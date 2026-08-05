@@ -18,7 +18,7 @@ TENANT_COMMANDS = "TenantCommands"
 TENANT_COMMANDS_REPLIES = "TenantCommandsReplies"
 
 PERSONAL_ORGANISATION_POSTFIX = "Personal"
-SMTP_DEFAULT_FROM = "auto_account_notification@local"
+SMTP_DEFAULT_FROM = "auto_epm-deps_deps_notification@epam.com"
 EMAIL_INVITATION_SUBJECT = "Welcome to DEPS"
 PATH_TO_STATIC_DATA = Path(__file__).parent.parent / "data"
 EMAIL_EVENT_TYPE_HEADER = "X-UNS-EVENT-TYPE"
