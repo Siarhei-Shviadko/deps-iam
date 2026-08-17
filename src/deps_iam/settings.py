@@ -26,7 +26,7 @@ class AuthenticationSettings(BaseAuthenticationSettings):
     @field_validator("access_mode")
     @classmethod
     def validate_access_mode(cls, v, info):  # noqa: WPS110, N805
-        if v != AccessModeEnum.ORGANISATION or not info.data.get("enabled"):
+        if info.data.get("enabled") and v != AccessModeEnum.ORGANISATION:
             raise ValueError("IAM service works only with organisation access mode and enabled authentication.")
 
         return v
@@ -34,6 +34,8 @@ class AuthenticationSettings(BaseAuthenticationSettings):
     @field_validator("userinfo_endpoint")
     @classmethod
     def validate_userinfo_endpoint_and_key(cls, v, info):  # noqa: WPS110
+        if not info.data.get("enabled"):
+            return v
         if info.data.get("api_key") is None and v is None:
             raise ValueError(
                 "Please provide userinfo endpoint via `USERINFO_ENDPOINT` or provide auth key via `API_KEY`"

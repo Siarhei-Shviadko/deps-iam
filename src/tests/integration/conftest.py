@@ -5,6 +5,7 @@ import pytest
 from deps_message_flow.sagas.orchestration import SagaInstance, SerializedSagaData
 
 from deps_iam.domain.entities import Organisation
+from deps_iam.domain.services import AuthorizationService
 from deps_iam.infrastructure.access_management.context_vars import user
 from tests.fakes import FakeMessageProducer
 
@@ -154,7 +155,7 @@ def create_approval_request(organisation_repository, existing_organisation, exis
 
 @pytest.fixture(autouse=True)
 def auth_mock(services, mocker):
-    mock = mocker.Mock(services.authorization.cls)
+    mock = mocker.Mock(AuthorizationService)
     with services.authorization.override(mock):
         yield services.authorization()
     services.authorization.reset_override()
