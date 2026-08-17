@@ -3,10 +3,16 @@ from copy import deepcopy
 from uuid import uuid4
 
 import pytest
-from dependency_injector.providers import Configuration, DependenciesContainer, Self
+from dependency_injector.providers import (
+    Configuration,
+    DependenciesContainer,
+    Selector,
+    Self,
+)
 
 from deps_iam.application import GroupService
 from deps_iam.domain.model import EntityId, Group, GroupInfo, PersonalInfo, Tenant
+from deps_iam.domain.services.authorization import AuthorizationService
 from tests.fakes import (
     FakeConnectionProvider,
     FakeIdentityProvider,
@@ -14,7 +20,7 @@ from tests.fakes import (
     FakeUserRepository,
 )
 
-DO_NOT_OVERRIDE_OBJS = (Self, DependenciesContainer, Configuration)
+DO_NOT_OVERRIDE_OBJS = (Self, DependenciesContainer, Configuration, Selector)
 
 
 @pytest.fixture(autouse=True)
@@ -145,8 +151,10 @@ def customization_service_mock(services):
 
 
 @pytest.fixture
-def authorization_service_mock(services):
-    yield services.authorization()
+def authorization_service_mock(services, mocker):
+    mock = mocker.Mock(AuthorizationService)
+    with services.authorization.override(mock):
+        yield mock
 
 
 @pytest.fixture

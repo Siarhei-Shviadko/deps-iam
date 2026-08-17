@@ -1,4 +1,5 @@
 from .connection_provider import FakeConnectionProvider
+from .stub_authorization import StubAuthorizationService
 from .constants import AGGREGATE, QUEUE
 from .event import FakeEvent
 from .event_publisher import FakeEventPublisher

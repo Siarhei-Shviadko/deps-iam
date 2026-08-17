@@ -59,6 +59,7 @@ from deps_iam.infrastructure.repositories import (
 from deps_iam.infrastructure.repositories.policy import PolicyRepository
 from deps_iam.infrastructure.uow import UnitOfWork
 from deps_iam.messaging.sagas_data import *
+from tests.fakes.stub_authorization import StubAuthorizationService
 
 MessagingClient = Union[ASBClient, KafkaClient, RabbitMQClient]
 
@@ -375,13 +376,21 @@ class Services(containers.DeclarativeContainer):
         org_service=organisation,
     )
 
-    authorization: providers.Singleton[AuthorizationService] = providers.Singleton(
-        AuthorizationService,
-        enable_personal_org=config.authentication.enable_personal_org,
-        api_key_auth_enabled=config.authentication.api_key_auth_enabled,
-        access_token_auth_service=infrastructure_services.access_token_auth_service,
-        register_service=registration,
-        user_service=user,
+    authorization = providers.Selector(
+        providers.Callable(str.lower, providers.Callable(str, config.authentication.enabled)),
+        true=providers.Singleton(
+            AuthorizationService,
+            enable_personal_org=config.authentication.enable_personal_org,
+            api_key_auth_enabled=config.authentication.api_key_auth_enabled,
+            access_token_auth_service=infrastructure_services.access_token_auth_service,
+            register_service=registration,
+            user_service=user,
+        ),
+        false=providers.Singleton(
+            StubAuthorizationService,
+            user_service=user,
+            register_service=registration,
+        ),
     )
 
     consumer: providers.Singleton[IMessageConsumer] = providers.Singleton(
